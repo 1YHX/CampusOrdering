@@ -11,7 +11,7 @@
  Target Server Version : 80042 (8.0.42)
  File Encoding         : 65001
 
- Date: 23/05/2025 20:48:51
+ Date: 24/05/2025 23:16:01
 */
 
 SET NAMES utf8mb4;
@@ -34,13 +34,14 @@ CREATE TABLE `admin` (
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `idx_username` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='管理员表';
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='管理员表';
 
 -- ----------------------------
 -- Records of admin
 -- ----------------------------
 BEGIN;
 INSERT INTO `admin` (`id`, `username`, `password`, `real_name`, `phone`, `email`, `status`, `last_login_time`, `create_time`, `update_time`) VALUES (3, 'admin', '123456', '系统管理员', '13800138000', 'admin@example.com', 1, NULL, '2025-05-22 22:07:51', '2025-05-22 22:07:51');
+INSERT INTO `admin` (`id`, `username`, `password`, `real_name`, `phone`, `email`, `status`, `last_login_time`, `create_time`, `update_time`) VALUES (6, 'admin9527', '', 'yyyy', '13267319537', 'yyyy@163.com', 1, NULL, '2025-05-24 23:10:14', '2025-05-24 23:11:02');
 COMMIT;
 
 -- ----------------------------
@@ -90,19 +91,20 @@ CREATE TABLE `dish` (
   PRIMARY KEY (`id`),
   KEY `idx_category` (`category_id`),
   KEY `idx_type` (`type`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='菜品表';
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='菜品表';
 
 -- ----------------------------
 -- Records of dish
 -- ----------------------------
 BEGIN;
-INSERT INTO `dish` (`id`, `name`, `category_id`, `price`, `image`, `description`, `status`, `type`, `stock`, `stock_alert`, `sold`, `rating`, `rating_count`, `create_time`, `update_time`) VALUES (1, '米饭', 1, 2.00, '/images/rice.jpg', '东北大米', 1, 'staple', 1000, 100, 0, 5.0, 0, '2025-05-22 21:19:20', '2025-05-22 21:19:20');
-INSERT INTO `dish` (`id`, `name`, `category_id`, `price`, `image`, `description`, `status`, `type`, `stock`, `stock_alert`, `sold`, `rating`, `rating_count`, `create_time`, `update_time`) VALUES (2, '馒头', 1, 1.50, '/images/mantou.jpg', '传统面食', 1, 'staple', 500, 50, 0, 5.0, 0, '2025-05-22 21:19:20', '2025-05-22 21:19:20');
-INSERT INTO `dish` (`id`, `name`, `category_id`, `price`, `image`, `description`, `status`, `type`, `stock`, `stock_alert`, `sold`, `rating`, `rating_count`, `create_time`, `update_time`) VALUES (3, '回锅肉', 2, 12.00, '/images/huiguorou.jpg', '川味回锅肉', 1, 'dish', 100, 10, 0, 5.0, 0, '2025-05-22 21:19:20', '2025-05-22 21:19:20');
-INSERT INTO `dish` (`id`, `name`, `category_id`, `price`, `image`, `description`, `status`, `type`, `stock`, `stock_alert`, `sold`, `rating`, `rating_count`, `create_time`, `update_time`) VALUES (4, '青椒炒肉', 2, 10.00, '/images/qingjiaochaorou.jpg', '农家小炒', 1, 'dish', 100, 10, 0, 5.0, 0, '2025-05-22 21:19:20', '2025-05-22 21:19:20');
-INSERT INTO `dish` (`id`, `name`, `category_id`, `price`, `image`, `description`, `status`, `type`, `stock`, `stock_alert`, `sold`, `rating`, `rating_count`, `create_time`, `update_time`) VALUES (5, '紫菜蛋花汤', 3, 6.00, '/images/soup.jpg', '营养美味', 1, 'dish', 200, 20, 0, 5.0, 0, '2025-05-22 21:19:20', '2025-05-22 21:19:20');
-INSERT INTO `dish` (`id`, `name`, `category_id`, `price`, `image`, `description`, `status`, `type`, `stock`, `stock_alert`, `sold`, `rating`, `rating_count`, `create_time`, `update_time`) VALUES (6, '学生套餐A', 5, 15.00, '/images/combo_a.jpg', '米饭+回锅肉+紫菜蛋花汤', 1, 'combo', 50, 5, 0, 5.0, 0, '2025-05-22 21:19:20', '2025-05-22 21:19:20');
-INSERT INTO `dish` (`id`, `name`, `category_id`, `price`, `image`, `description`, `status`, `type`, `stock`, `stock_alert`, `sold`, `rating`, `rating_count`, `create_time`, `update_time`) VALUES (7, '矿泉水', 6, 2.00, '/images/water.jpg', '550ml', 1, 'product', 1000, 100, 0, 5.0, 0, '2025-05-22 21:19:20', '2025-05-22 21:19:20');
+INSERT INTO `dish` (`id`, `name`, `category_id`, `price`, `image`, `description`, `status`, `type`, `stock`, `stock_alert`, `sold`, `rating`, `rating_count`, `create_time`, `update_time`) VALUES (1, '米饭', 1, 1.00, '/uploads/images/1de79fe5-7196-45ba-a128-a1f9ba3e691a.png', '东北大米', 1, 'staple', 1000, 100, 0, 5.0, 0, '2025-05-22 21:19:20', '2025-05-24 17:50:37');
+INSERT INTO `dish` (`id`, `name`, `category_id`, `price`, `image`, `description`, `status`, `type`, `stock`, `stock_alert`, `sold`, `rating`, `rating_count`, `create_time`, `update_time`) VALUES (2, '馒头', 1, 1.50, '/uploads/images/7916da30-4216-4f34-87eb-28cb4610689b.png', '传统面食', 1, 'staple', 500, 50, 0, 5.0, 0, '2025-05-22 21:19:20', '2025-05-24 20:47:35');
+INSERT INTO `dish` (`id`, `name`, `category_id`, `price`, `image`, `description`, `status`, `type`, `stock`, `stock_alert`, `sold`, `rating`, `rating_count`, `create_time`, `update_time`) VALUES (3, '回锅肉', 2, 12.00, '/uploads/images/bc27e188-1bc0-437b-8c86-1054e39968a9.png', '川味回锅肉', 1, 'dish', 100, 10, 0, 5.0, 0, '2025-05-22 21:19:20', '2025-05-24 19:34:27');
+INSERT INTO `dish` (`id`, `name`, `category_id`, `price`, `image`, `description`, `status`, `type`, `stock`, `stock_alert`, `sold`, `rating`, `rating_count`, `create_time`, `update_time`) VALUES (4, '青椒炒肉', 2, 10.00, '/uploads/images/43b0a58c-7a11-4778-9827-1631ef256403.png', '农家小炒', 1, 'dish', 100, 10, 0, 5.0, 0, '2025-05-22 21:19:20', '2025-05-24 19:38:39');
+INSERT INTO `dish` (`id`, `name`, `category_id`, `price`, `image`, `description`, `status`, `type`, `stock`, `stock_alert`, `sold`, `rating`, `rating_count`, `create_time`, `update_time`) VALUES (5, '紫菜蛋花汤', 3, 6.00, '/uploads/images/15b6e456-d427-4cf7-b904-c6f3158099df.png', '营养美味', 1, 'dish', 200, 20, 0, 5.0, 0, '2025-05-22 21:19:20', '2025-05-24 20:10:57');
+INSERT INTO `dish` (`id`, `name`, `category_id`, `price`, `image`, `description`, `status`, `type`, `stock`, `stock_alert`, `sold`, `rating`, `rating_count`, `create_time`, `update_time`) VALUES (6, '学生套餐A', 5, 15.00, '/uploads/images/6375966c-8b74-4333-9b60-025603505e40.png', '米饭+回锅肉+紫菜蛋花汤', 1, 'combo', 49, 5, 1, 5.0, 0, '2025-05-22 21:19:20', '2025-05-24 20:39:52');
+INSERT INTO `dish` (`id`, `name`, `category_id`, `price`, `image`, `description`, `status`, `type`, `stock`, `stock_alert`, `sold`, `rating`, `rating_count`, `create_time`, `update_time`) VALUES (7, '矿泉水', 6, 2.00, '/uploads/images/db44a593-dad9-4b6f-b1e9-040fd770b73c.png', '550ml', 1, 'product', 1000, 100, 0, 5.0, 0, '2025-05-22 21:19:20', '2025-05-24 20:14:12');
+INSERT INTO `dish` (`id`, `name`, `category_id`, `price`, `image`, `description`, `status`, `type`, `stock`, `stock_alert`, `sold`, `rating`, `rating_count`, `create_time`, `update_time`) VALUES (8, '11', 4, 10.00, '/uploads/images/2c700466-77ce-4063-87f8-a9793a9434e5.png', '11', 1, 'dish', 7, 10, 3, 5.0, 0, '2025-05-24 18:00:28', '2025-05-24 18:09:39');
 COMMIT;
 
 -- ----------------------------
@@ -117,7 +119,7 @@ CREATE TABLE `dish_category` (
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP,
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='菜品分类表';
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='菜品分类表';
 
 -- ----------------------------
 -- Records of dish_category
@@ -157,12 +159,20 @@ CREATE TABLE `order` (
   KEY `idx_user` (`user_type`,`user_id`),
   KEY `idx_eat_time` (`eat_time`),
   KEY `idx_status` (`status`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='订单表';
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='订单表';
 
 -- ----------------------------
 -- Records of order
 -- ----------------------------
 BEGIN;
+INSERT INTO `order` (`id`, `order_no`, `user_type`, `user_id`, `amount`, `subsidy_amount`, `actual_amount`, `payment_method`, `order_type`, `status`, `eat_time`, `pickup_no`, `remark`, `operator_id`, `create_time`, `update_time`) VALUES (1, 'ORD1748075539818', 'student', 3, 14.00, 0.00, 14.00, 'cash', 'reservation', 'pending', '2025-05-24 04:00:00', NULL, '', NULL, '2025-05-24 16:32:20', '2025-05-24 16:32:20');
+INSERT INTO `order` (`id`, `order_no`, `user_type`, `user_id`, `amount`, `subsidy_amount`, `actual_amount`, `payment_method`, `order_type`, `status`, `eat_time`, `pickup_no`, `remark`, `operator_id`, `create_time`, `update_time`) VALUES (2, 'ORD1748077367865', 'student', 3, 3.00, 0.00, 3.00, 'cash', 'reservation', 'pending', '2025-05-24 10:30:00', NULL, '', NULL, '2025-05-24 17:02:48', '2025-05-24 17:02:48');
+INSERT INTO `order` (`id`, `order_no`, `user_type`, `user_id`, `amount`, `subsidy_amount`, `actual_amount`, `payment_method`, `order_type`, `status`, `eat_time`, `pickup_no`, `remark`, `operator_id`, `create_time`, `update_time`) VALUES (3, 'ORD1748077418978', 'student', 3, 2.00, 0.00, 2.00, 'cash', 'dine_in', 'pending', '2025-05-24 09:03:38', NULL, '', NULL, '2025-05-24 17:03:39', '2025-05-24 17:03:39');
+INSERT INTO `order` (`id`, `order_no`, `user_type`, `user_id`, `amount`, `subsidy_amount`, `actual_amount`, `payment_method`, `order_type`, `status`, `eat_time`, `pickup_no`, `remark`, `operator_id`, `create_time`, `update_time`) VALUES (4, 'ORD1748080876867', 'student', 3, 50.00, 0.00, 50.00, 'cash', 'reservation', 'pending', '2025-05-24 12:00:00', NULL, '', NULL, '2025-05-24 18:01:17', '2025-05-24 18:01:17');
+INSERT INTO `order` (`id`, `order_no`, `user_type`, `user_id`, `amount`, `subsidy_amount`, `actual_amount`, `payment_method`, `order_type`, `status`, `eat_time`, `pickup_no`, `remark`, `operator_id`, `create_time`, `update_time`) VALUES (5, 'ORD1748081029805', 'student', 3, 4.00, 0.00, 4.00, 'cash', 'dine_in', 'pending', '2025-05-24 10:03:49', NULL, '', NULL, '2025-05-24 18:03:50', '2025-05-24 18:03:50');
+INSERT INTO `order` (`id`, `order_no`, `user_type`, `user_id`, `amount`, `subsidy_amount`, `actual_amount`, `payment_method`, `order_type`, `status`, `eat_time`, `pickup_no`, `remark`, `operator_id`, `create_time`, `update_time`) VALUES (6, 'ORD1748081379055', 'student', 3, 30.00, 0.00, 30.00, 'cash', 'reservation', 'pending', '2025-05-24 12:00:00', NULL, '', NULL, '2025-05-24 18:09:39', '2025-05-24 18:09:39');
+INSERT INTO `order` (`id`, `order_no`, `user_type`, `user_id`, `amount`, `subsidy_amount`, `actual_amount`, `payment_method`, `order_type`, `status`, `eat_time`, `pickup_no`, `remark`, `operator_id`, `create_time`, `update_time`) VALUES (7, 'ORD1748081393160', 'student', 3, 3.00, 0.00, 3.00, 'cash', 'dine_in', 'completed', '2025-05-24 10:09:53', NULL, '', NULL, '2025-05-24 18:09:53', '2025-05-24 22:47:09');
+INSERT INTO `order` (`id`, `order_no`, `user_type`, `user_id`, `amount`, `subsidy_amount`, `actual_amount`, `payment_method`, `order_type`, `status`, `eat_time`, `pickup_no`, `remark`, `operator_id`, `create_time`, `update_time`) VALUES (8, 'ORD1748090391550', 'student', 4, 15.00, 15.00, 0.00, 'subsidy', 'dine_in', 'paid', '2025-05-24 12:39:51', NULL, '', NULL, '2025-05-24 20:39:52', '2025-05-24 22:02:08');
 COMMIT;
 
 -- ----------------------------
@@ -182,12 +192,21 @@ CREATE TABLE `order_detail` (
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `idx_order` (`order_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='订单明细表';
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='订单明细表';
 
 -- ----------------------------
 -- Records of order_detail
 -- ----------------------------
 BEGIN;
+INSERT INTO `order_detail` (`id`, `order_id`, `dish_id`, `dish_name`, `dish_type`, `price`, `quantity`, `amount`, `status`, `create_time`) VALUES (1, 1, 1, '米饭', 'staple', 2.00, 1, 2.00, 'pending', '2025-05-24 16:32:20');
+INSERT INTO `order_detail` (`id`, `order_id`, `dish_id`, `dish_name`, `dish_type`, `price`, `quantity`, `amount`, `status`, `create_time`) VALUES (2, 1, 3, '回锅肉', 'dish', 12.00, 1, 12.00, 'pending', '2025-05-24 16:32:20');
+INSERT INTO `order_detail` (`id`, `order_id`, `dish_id`, `dish_name`, `dish_type`, `price`, `quantity`, `amount`, `status`, `create_time`) VALUES (3, 2, 2, '馒头', 'staple', 1.50, 2, 3.00, 'pending', '2025-05-24 17:02:48');
+INSERT INTO `order_detail` (`id`, `order_id`, `dish_id`, `dish_name`, `dish_type`, `price`, `quantity`, `amount`, `status`, `create_time`) VALUES (4, 3, 1, '米饭', 'staple', 2.00, 1, 2.00, 'pending', '2025-05-24 17:03:39');
+INSERT INTO `order_detail` (`id`, `order_id`, `dish_id`, `dish_name`, `dish_type`, `price`, `quantity`, `amount`, `status`, `create_time`) VALUES (5, 4, 8, '11', 'dish', 10.00, 5, 50.00, 'pending', '2025-05-24 18:01:17');
+INSERT INTO `order_detail` (`id`, `order_id`, `dish_id`, `dish_name`, `dish_type`, `price`, `quantity`, `amount`, `status`, `create_time`) VALUES (6, 5, 1, '米饭', 'staple', 1.00, 4, 4.00, 'pending', '2025-05-24 18:03:50');
+INSERT INTO `order_detail` (`id`, `order_id`, `dish_id`, `dish_name`, `dish_type`, `price`, `quantity`, `amount`, `status`, `create_time`) VALUES (7, 6, 8, '11', 'dish', 10.00, 3, 30.00, 'pending', '2025-05-24 18:09:39');
+INSERT INTO `order_detail` (`id`, `order_id`, `dish_id`, `dish_name`, `dish_type`, `price`, `quantity`, `amount`, `status`, `create_time`) VALUES (8, 7, 2, '馒头', 'staple', 1.50, 2, 3.00, 'pending', '2025-05-24 18:09:53');
+INSERT INTO `order_detail` (`id`, `order_id`, `dish_id`, `dish_name`, `dish_type`, `price`, `quantity`, `amount`, `status`, `create_time`) VALUES (9, 8, 6, '学生套餐A', 'combo', 15.00, 1, 15.00, 'pending', '2025-05-24 20:39:52');
 COMMIT;
 
 -- ----------------------------
@@ -297,7 +316,7 @@ CREATE TABLE `student` (
 -- Records of student
 -- ----------------------------
 BEGIN;
-INSERT INTO `student` (`id`, `username`, `password`, `real_name`, `student_no`, `phone`, `email`, `college`, `major`, `class_name`, `grade`, `status`, `last_login_time`, `create_time`, `update_time`) VALUES (3, 'student001', '123456', '张三', 'S001', '13800138001', 'student1@example.com', '计算机学院', '软件工程', '软工2101', '2021', 1, NULL, '2025-05-22 22:07:51', '2025-05-22 22:07:51');
+INSERT INTO `student` (`id`, `username`, `password`, `real_name`, `student_no`, `phone`, `email`, `college`, `major`, `class_name`, `grade`, `status`, `last_login_time`, `create_time`, `update_time`) VALUES (3, 'student001', '123456', '张三', 'S001', '13800138011', 'student1@example.com', '计算机学院', '软件工程', '软工2101', '2021', 1, NULL, '2025-05-22 22:07:51', '2025-05-24 16:07:12');
 INSERT INTO `student` (`id`, `username`, `password`, `real_name`, `student_no`, `phone`, `email`, `college`, `major`, `class_name`, `grade`, `status`, `last_login_time`, `create_time`, `update_time`) VALUES (4, 'student002', '123456', '李四', 'S002', '13800138002', 'student2@example.com', '计算机学院', '计算机科学', '计科2101', '2021', 1, NULL, '2025-05-22 22:07:51', '2025-05-22 22:07:51');
 INSERT INTO `student` (`id`, `username`, `password`, `real_name`, `student_no`, `phone`, `email`, `college`, `major`, `class_name`, `grade`, `status`, `last_login_time`, `create_time`, `update_time`) VALUES (6, 'yhx', '123456', 'yhx', 'S12', '13454289652', 'yhx@163.com', '计算机学院', '计算机科学与技术学院', '计科26-6', '2026', 1, NULL, '2025-05-22 23:10:51', '2025-05-22 23:10:51');
 COMMIT;
@@ -319,12 +338,15 @@ CREATE TABLE `subsidy_account` (
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `idx_user_subsidy` (`user_type`,`user_id`,`subsidy_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='补贴账户表';
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='补贴账户表';
 
 -- ----------------------------
 -- Records of subsidy_account
 -- ----------------------------
 BEGIN;
+INSERT INTO `subsidy_account` (`id`, `user_type`, `user_id`, `subsidy_id`, `balance`, `total_received`, `total_used`, `last_reset_time`, `create_time`, `update_time`) VALUES (1, 'student', 3, 1, 15.00, 15.00, 0.00, NULL, '2025-05-24 21:52:13', '2025-05-24 21:52:13');
+INSERT INTO `subsidy_account` (`id`, `user_type`, `user_id`, `subsidy_id`, `balance`, `total_received`, `total_used`, `last_reset_time`, `create_time`, `update_time`) VALUES (2, 'student', 4, 1, 0.00, 15.00, 15.00, NULL, '2025-05-24 21:52:13', '2025-05-24 22:02:08');
+INSERT INTO `subsidy_account` (`id`, `user_type`, `user_id`, `subsidy_id`, `balance`, `total_received`, `total_used`, `last_reset_time`, `create_time`, `update_time`) VALUES (3, 'student', 6, 1, 15.00, 15.00, 0.00, NULL, '2025-05-24 21:52:13', '2025-05-24 21:52:13');
 COMMIT;
 
 -- ----------------------------
@@ -345,7 +367,7 @@ CREATE TABLE `subsidy_plan` (
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP,
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='补贴方案表';
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='补贴方案表';
 
 -- ----------------------------
 -- Records of subsidy_plan
