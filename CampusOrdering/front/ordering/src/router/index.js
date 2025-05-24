@@ -67,6 +67,24 @@ const routes = [
         }
       },
       {
+        path: '/order-payment/:id',
+        name: 'OrderPayment',
+        component: () => import('@/views/order-payment/index.vue'),
+        meta: { 
+          requiresAuth: true,
+          allowedRoles: ['student', 'staff', 'admin']
+        }
+      },
+      {
+        path: '/order-detail/:id',
+        name: 'OrderDetail',
+        component: () => import('@/views/order-detail/index.vue'),
+        meta: { 
+          requiresAuth: true,
+          allowedRoles: ['student', 'staff', 'admin']
+        }
+      },
+      {
         path: '/order-management',
         name: 'OrderManagement',
         component: () => import('@/views/order-management/index.vue'),

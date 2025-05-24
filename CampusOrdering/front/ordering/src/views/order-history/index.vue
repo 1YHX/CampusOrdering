@@ -2,6 +2,9 @@
   <div class="order-history-container">
     <div class="header-section">
       <h2>订单记录</h2>
+      <div class="total-info" v-if="total > 0">
+        <span class="total-text">共找到 <strong>{{ total }}</strong> 条订单记录</span>
+      </div>
       <div class="filter-section">
         <el-date-picker
           v-model="dateRange"
@@ -18,11 +21,12 @@
           clearable
         >
           <el-option label="全部" value="" />
-          <el-option label="待支付" value="PENDING" />
-          <el-option label="已支付" value="PAID" />
-          <el-option label="准备中" value="PREPARING" />
-          <el-option label="已完成" value="COMPLETED" />
-          <el-option label="已取消" value="CANCELLED" />
+          <el-option label="待支付" value="pending" />
+          <el-option label="已支付" value="paid" />
+          <el-option label="准备中" value="preparing" />
+          <el-option label="待取餐" value="ready" />
+          <el-option label="已完成" value="completed" />
+          <el-option label="已取消" value="cancelled" />
         </el-select>
         <el-select 
           v-model="typeFilter" 
@@ -31,16 +35,21 @@
           clearable
         >
           <el-option label="全部" value="" />
-          <el-option label="提前订餐" value="ADVANCE" />
-          <el-option label="堂食点餐" value="DINE_IN" />
+          <el-option label="预约订餐" value="reservation" />
+          <el-option label="堂食点餐" value="dine_in" />
         </el-select>
       </div>
     </div>
 
+    <!-- 加载状态 -->
+    <div v-if="loading" class="loading-section">
+      <el-skeleton :rows="3" animated />
+    </div>
+
     <!-- 订单列表 -->
-    <div class="orders-section">
+    <div v-else class="orders-section">
       <el-card 
-        v-for="order in filteredOrders" 
+        v-for="order in orders" 
         :key="order.id" 
         class="order-card"
         :body-style="{ padding: '20px' }"
@@ -60,22 +69,30 @@
             >
               {{ getTypeText(order.orderType) }}
             </el-tag>
+            <span v-if="order.pickupNo" class="pickup-no">取餐号：{{ order.pickupNo }}</span>
           </div>
           <div class="order-time">
-            {{ formatDate(order.createTime) }}
+            下单时间：{{ formatDate(order.createTime) }}
           </div>
         </div>
 
         <div class="order-content">
-          <div class="order-items">
+          <!-- 就餐时间 -->
+          <div class="eat-time">
+            <span class="eat-time-label">就餐时间：</span>
+            <span class="eat-time-text">{{ formatDate(order.eatTime) }}</span>
+          </div>
+          
+          <!-- 订单明细会在加载时获取 -->
+          <div class="order-items" v-if="order.details && order.details.length > 0">
             <div 
-              v-for="item in order.items" 
+              v-for="item in order.details" 
               :key="item.id" 
               class="order-item"
             >
-              <img :src="item.dishImage" class="item-image" />
               <div class="item-info">
                 <span class="item-name">{{ item.dishName }}</span>
+                <span class="item-type">{{ getTypeText(item.dishType) }}</span>
                 <span class="item-spec">x{{ item.quantity }}</span>
               </div>
               <div class="item-price">
@@ -84,20 +101,33 @@
             </div>
           </div>
           
-          <div v-if="order.remarks" class="order-remarks">
+          <div v-if="order.remark" class="order-remarks">
             <span class="remarks-label">备注：</span>
-            <span class="remarks-text">{{ order.remarks }}</span>
+            <span class="remarks-text">{{ order.remark }}</span>
+          </div>
+          
+          <!-- 金额信息 -->
+          <div class="amount-info">
+            <div v-if="order.subsidyAmount && order.subsidyAmount > 0" class="subsidy-amount">
+              补贴金额：¥{{ order.subsidyAmount.toFixed(2) }}
+            </div>
+            <div class="payment-method" v-if="order.paymentMethod">
+              支付方式：{{ getPaymentMethodText(order.paymentMethod) }}
+            </div>
           </div>
         </div>
 
         <div class="order-footer">
           <div class="order-total">
-            <span>共 {{ getTotalQuantity(order.items) }} 件商品</span>
-            <span class="total-amount">实付：¥{{ order.totalAmount }}</span>
+            <span v-if="order.details && order.details.length > 0">共 {{ getTotalQuantity(order.details) }} 件商品</span>
+            <div class="amount-details">
+              <span class="total-amount">总金额：¥{{ order.amount ? order.amount.toFixed(2) : '0.00' }}</span>
+              <span class="actual-amount">实付：¥{{ order.actualAmount ? order.actualAmount.toFixed(2) : '0.00' }}</span>
+            </div>
           </div>
           <div class="order-actions">
             <el-button 
-              v-if="order.status === 'PENDING'" 
+              v-if="order.status === 'pending'" 
               type="danger" 
               size="small"
               @click="cancelOrder(order)"
@@ -105,7 +135,7 @@
               取消订单
             </el-button>
             <el-button 
-              v-if="order.status === 'PENDING'" 
+              v-if="order.status === 'pending'" 
               type="primary" 
               size="small"
               @click="payOrder(order)"
@@ -119,7 +149,7 @@
               查看详情
             </el-button>
             <el-button 
-              v-if="order.status === 'COMPLETED'" 
+              v-if="order.status === 'completed'" 
               type="primary" 
               size="small"
               @click="reorder(order)"
@@ -131,21 +161,22 @@
       </el-card>
 
       <!-- 空状态 -->
-      <div v-if="!filteredOrders.length" class="empty-state">
+      <div v-if="!orders.length && !loading" class="empty-state">
         <el-empty description="暂无订单记录" />
       </div>
     </div>
 
-    <!-- 分页 -->
-    <div class="pagination-section">
+    <!-- 分页 - 移除条件限制，只要不在加载中就显示 -->
+    <div class="pagination-section" v-if="!loading">
       <el-pagination
         v-model:current-page="currentPage"
         v-model:page-size="pageSize"
-        :page-sizes="[10, 20, 50, 100]"
+        :page-sizes="[5, 10, 20, 50]"
         :total="total"
         layout="total, sizes, prev, pager, next, jumper"
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
+        :hide-on-single-page="false"
       />
     </div>
   </div>
@@ -154,7 +185,10 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import request from '@/utils/request'
+import { getUserOrders, cancelOrder as cancelOrderApi } from '@/api/order'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 // 状态管理
 const orders = ref([])
@@ -166,127 +200,60 @@ const pageSize = ref(10)
 const total = ref(0)
 const loading = ref(false)
 
-// 模拟数据 - 实际应该从后端获取
-const mockOrders = ref([
-  {
-    id: 1,
-    orderNo: 'ORD20241122001',
-    status: 'COMPLETED',
-    orderType: 'ADVANCE',
-    totalAmount: 45.00,
-    createTime: new Date('2024-11-22 12:30:00'),
-    remarks: '少放辣椒',
-    items: [
-      {
-        id: 1,
-        dishName: '红烧肉',
-        dishImage: 'https://example.com/hongshaorou.jpg',
-        quantity: 1,
-        price: 25.00
-      },
-      {
-        id: 2,
-        dishName: '米饭',
-        dishImage: 'https://example.com/rice.jpg',
-        quantity: 2,
-        price: 10.00
-      }
-    ]
-  },
-  {
-    id: 2,
-    orderNo: 'ORD20241122002',
-    status: 'PENDING',
-    orderType: 'DINE_IN',
-    totalAmount: 38.00,
-    createTime: new Date('2024-11-22 18:15:00'),
-    remarks: '',
-    items: [
-      {
-        id: 1,
-        dishName: '宫保鸡丁',
-        dishImage: 'https://example.com/gongbaojiding.jpg',
-        quantity: 1,
-        price: 28.00
-      },
-      {
-        id: 2,
-        dishName: '紫菜蛋花汤',
-        dishImage: 'https://example.com/soup.jpg',
-        quantity: 1,
-        price: 10.00
-      }
-    ]
-  }
-])
-
-// 计算属性
-const filteredOrders = computed(() => {
-  return mockOrders.value.filter(order => {
-    const matchesStatus = !statusFilter.value || order.status === statusFilter.value
-    const matchesType = !typeFilter.value || order.orderType === typeFilter.value
-    
-    let matchesDate = true
-    if (dateRange.value && dateRange.value.length === 2) {
-      const orderDate = new Date(order.createTime)
-      const startDate = new Date(dateRange.value[0])
-      const endDate = new Date(dateRange.value[1])
-      endDate.setHours(23, 59, 59, 999) // 包含结束日期的整天
-      matchesDate = orderDate >= startDate && orderDate <= endDate
-    }
-    
-    return matchesStatus && matchesType && matchesDate
-  })
-})
-
 // 方法
 const handleDateChange = () => {
-  // 实现日期筛选逻辑
+  currentPage.value = 1 // 重置到第一页
+  loadOrders()
 }
 
 const handleStatusChange = () => {
-  // 实现状态筛选逻辑
+  currentPage.value = 1 // 重置到第一页
+  loadOrders()
 }
 
 const handleTypeChange = () => {
-  // 实现类型筛选逻辑
+  currentPage.value = 1 // 重置到第一页
+  loadOrders()
 }
 
 const getStatusType = (status) => {
   const statusMap = {
-    'PENDING': 'warning',
-    'PAID': 'info',
-    'PREPARING': 'primary',
-    'COMPLETED': 'success',
-    'CANCELLED': 'danger'
+    'pending': 'warning',
+    'paid': 'info',
+    'preparing': 'primary',
+    'ready': 'success',
+    'completed': 'success',
+    'cancelled': 'danger'
   }
   return statusMap[status] || 'info'
 }
 
 const getStatusText = (status) => {
   const statusMap = {
-    'PENDING': '待支付',
-    'PAID': '已支付',
-    'PREPARING': '准备中',
-    'COMPLETED': '已完成',
-    'CANCELLED': '已取消'
+    'pending': '待支付',
+    'paid': '已支付',
+    'preparing': '准备中',
+    'ready': '待取餐',
+    'completed': '已完成',
+    'cancelled': '已取消'
   }
   return statusMap[status] || '未知'
 }
 
 const getTypeType = (type) => {
-  return type === 'ADVANCE' ? 'primary' : 'success'
+  return type === 'reservation' ? 'primary' : 'success'
 }
 
 const getTypeText = (type) => {
   const typeMap = {
-    'ADVANCE': '提前订餐',
-    'DINE_IN': '堂食点餐'
+    'reservation': '预约订餐',
+    'dine_in': '堂食点餐'
   }
   return typeMap[type] || '未知'
 }
 
 const formatDate = (date) => {
+  if (!date) return ''
   return new Date(date).toLocaleString('zh-CN', {
     year: 'numeric',
     month: '2-digit',
@@ -297,6 +264,7 @@ const formatDate = (date) => {
 }
 
 const getTotalQuantity = (items) => {
+  if (!items || !Array.isArray(items)) return 0
   return items.reduce((sum, item) => sum + item.quantity, 0)
 }
 
@@ -308,10 +276,10 @@ const cancelOrder = async (order) => {
       type: 'warning'
     })
     
-    await request.put(`/order/${order.id}/cancel`)
+    await cancelOrderApi(order.id)
     ElMessage.success('订单已取消')
-    // 更新订单状态
-    order.status = 'CANCELLED'
+    // 重新加载订单列表
+    loadOrders()
   } catch (error) {
     if (error !== 'cancel') {
       console.error('取消订单失败:', error)
@@ -321,20 +289,13 @@ const cancelOrder = async (order) => {
 }
 
 const payOrder = async (order) => {
-  try {
-    await request.post(`/order/${order.id}/pay`)
-    ElMessage.success('支付成功')
-    // 更新订单状态
-    order.status = 'PAID'
-  } catch (error) {
-    console.error('支付失败:', error)
-    ElMessage.error('支付失败')
-  }
+  // 跳转到支付页面
+  router.push(`/order-payment/${order.id}`)
 }
 
 const viewOrderDetail = (order) => {
-  // 跳转到订单详情页面或显示详情弹窗
-  ElMessage.info('订单详情功能开发中...')
+  // 跳转到订单详情页面
+  router.push(`/order-detail/${order.id}`)
 }
 
 const reorder = (order) => {
@@ -345,39 +306,111 @@ const reorder = (order) => {
 const handleSizeChange = (val) => {
   pageSize.value = val
   currentPage.value = 1
-  // 重新加载数据
+  loadOrders()
 }
 
 const handleCurrentChange = (val) => {
   currentPage.value = val
-  // 重新加载数据
+  loadOrders()
 }
 
+const getPaymentMethodText = (method) => {
+  const methodMap = {
+    'cash': '现金支付',
+    'subsidy': '补贴支付',
+    'mixed': '混合支付'
+  }
+  return methodMap[method] || '未知'
+}
+
+// 从数据库加载订单数据
 const loadOrders = async () => {
   loading.value = true
   try {
-    // 实际应该调用后端API
-    // const { data } = await request.get('/order/list', {
-    //   params: {
-    //     page: currentPage.value,
-    //     size: pageSize.value,
-    //     status: statusFilter.value,
-    //     type: typeFilter.value,
-    //     startDate: dateRange.value?.[0],
-    //     endDate: dateRange.value?.[1]
-    //   }
-    // })
-    // orders.value = data.records
-    // total.value = data.total
+    const params = {
+      page: currentPage.value,
+      size: pageSize.value
+    }
     
-    // 使用模拟数据
-    orders.value = mockOrders.value
-    total.value = mockOrders.value.length
+    // 添加状态过滤
+    if (statusFilter.value) {
+      params.status = statusFilter.value
+    }
+    
+    // 添加订单类型过滤
+    if (typeFilter.value) {
+      params.orderType = typeFilter.value
+    }
+    
+    // 添加日期过滤
+    if (dateRange.value && dateRange.value.length === 2) {
+      params.startDate = dateRange.value[0]
+      params.endDate = dateRange.value[1]
+    }
+    
+    console.log('请求参数:', params)
+    const { data } = await getUserOrders(params)
+    console.log('后端返回数据:', data)
+    
+    // 处理MyBatis Plus分页返回的数据结构
+    if (data && typeof data === 'object') {
+      if (data.records && Array.isArray(data.records)) {
+        // MyBatis Plus分页结果
+        orders.value = data.records
+        total.value = data.total || 0
+        console.log('分页数据处理完成 - 订单数量:', orders.value.length, '总数:', total.value)
+      } else if (Array.isArray(data)) {
+        // 简单数组
+        orders.value = data
+        total.value = data.length
+        console.log('数组数据处理完成 - 订单数量:', orders.value.length)
+      } else {
+        // 其他情况
+        orders.value = []
+        total.value = 0
+        console.log('未知数据格式:', data)
+      }
+    } else {
+      orders.value = []
+      total.value = 0
+      console.log('无效数据:', data)
+    }
+    
+    // 为每个订单加载详情
+    if (orders.value.length > 0) {
+      await loadOrderDetails()
+    }
+    
+    console.log('最终订单数据:', orders.value)
+    console.log('总数:', total.value)
   } catch (error) {
     console.error('加载订单失败:', error)
     ElMessage.error('加载订单失败')
+    orders.value = []
+    total.value = 0
   } finally {
     loading.value = false
+  }
+}
+
+// 加载订单详情
+const loadOrderDetails = async () => {
+  try {
+    // 动态导入订单详情API
+    const { getOrderDetails } = await import('@/api/order')
+    
+    // 为每个订单加载详情
+    for (const order of orders.value) {
+      try {
+        const { data: details } = await getOrderDetails(order.id)
+        order.details = details || []
+      } catch (error) {
+        console.error(`加载订单 ${order.id} 详情失败:`, error)
+        order.details = []
+      }
+    }
+  } catch (error) {
+    console.error('加载订单详情失败:', error)
   }
 }
 
@@ -398,6 +431,20 @@ onMounted(() => {
 .header-section h2 {
   margin: 0 0 20px 0;
   color: #303133;
+}
+
+.total-info {
+  margin-bottom: 15px;
+}
+
+.total-text {
+  color: #606266;
+  font-size: 14px;
+}
+
+.total-text strong {
+  color: #409eff;
+  font-weight: 600;
 }
 
 .filter-section {
@@ -540,5 +587,76 @@ onMounted(() => {
   display: flex;
   justify-content: center;
   margin-top: 20px;
+}
+
+.pickup-no {
+  color: #f56c6c;
+  font-weight: 500;
+  font-size: 12px;
+}
+
+.eat-time {
+  margin-bottom: 15px;
+  padding: 8px 12px;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  border-left: 3px solid #409eff;
+}
+
+.eat-time-label {
+  color: #606266;
+  font-weight: 500;
+}
+
+.eat-time-text {
+  color: #303133;
+  margin-left: 8px;
+}
+
+.loading-section {
+  padding: 20px;
+}
+
+.amount-info {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #f0f0f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+}
+
+.subsidy-amount {
+  color: #67c23a;
+  font-weight: 500;
+}
+
+.payment-method {
+  color: #909399;
+}
+
+.amount-details {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.total-amount {
+  color: #606266;
+  font-size: 14px;
+}
+
+.actual-amount {
+  color: #f56c6c;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.item-type {
+  color: #909399;
+  font-size: 12px;
+  margin-left: 8px;
 }
 </style> 

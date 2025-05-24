@@ -37,7 +37,13 @@ public class Dish implements Serializable {
     
     private Integer stock;
     
+    private Integer stockAlert;
+    
     private Integer sold;
+    
+    private BigDecimal rating;
+    
+    private Integer ratingCount;
     
     private LocalDateTime createTime;
     

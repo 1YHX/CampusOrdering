@@ -130,8 +130,13 @@ const handleLogin = async () => {
         
         // 直接使用响应数据，因为响应拦截器已经处理了错误情况
         setToken(response.data.token)
+        
+        // 保存用户信息到localStorage，供API调用使用
         localStorage.setItem('userRole', loginForm.role)
+        localStorage.setItem('userId', response.data.user.id)
+        localStorage.setItem('userType', loginForm.role)
         localStorage.setItem('userInfo', JSON.stringify(response.data.user))
+        
         ElMessage.success('登录成功')
         router.push('/dashboard')
       } catch (error) {

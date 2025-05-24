@@ -23,6 +23,8 @@ public class Order implements Serializable {
     
     private String orderNo;
     
+    private String userType;
+    
     private Long userId;
     
     private BigDecimal amount;
@@ -39,7 +41,11 @@ public class Order implements Serializable {
     
     private LocalDateTime eatTime;
     
+    private String pickupNo;
+    
     private String remark;
+    
+    private Long operatorId;
     
     private LocalDateTime createTime;
     

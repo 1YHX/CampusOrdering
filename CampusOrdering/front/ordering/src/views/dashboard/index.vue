@@ -91,10 +91,10 @@
                   <el-icon><Setting /></el-icon>
                   <span>系统管理</span>
                 </template>
-                <el-menu-item index="/dish-management">
-                  <el-icon><Collection /></el-icon>
-                  <span>菜品管理</span>
-                </el-menu-item>
+<!--                <el-menu-item index="/dish-management">-->
+<!--                  <el-icon><Collection /></el-icon>-->
+<!--                  <span>菜品管理</span>-->
+<!--                </el-menu-item>-->
                 <el-menu-item index="/order-management">
                   <el-icon><List /></el-icon>
                   <span>订单管理</span>

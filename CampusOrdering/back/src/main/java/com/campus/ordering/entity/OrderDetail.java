@@ -27,11 +27,15 @@ public class OrderDetail implements Serializable {
     
     private String dishName;
     
+    private String dishType;
+    
     private BigDecimal price;
     
     private Integer quantity;
     
     private BigDecimal amount;
+    
+    private String status;
     
     private LocalDateTime createTime;
 } 
